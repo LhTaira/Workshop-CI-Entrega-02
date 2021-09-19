@@ -4,6 +4,7 @@ services:
 stages:
   - build
   - test
+  - deploy
 
 build-job:
   stage: build
@@ -14,7 +15,7 @@ build-job:
     - docker build -t frontend -f ./frontend/Dockerfile ./frontend/ 
     - docker build -t backend -f ./backend/Dockerfile ./backend/ 
     - echo "Building complete."
-    
+
 backend-test-job:
   stage: test
   before_script:
@@ -34,3 +35,15 @@ frontend-test-job:
     - echo "Running unit tests... This will take about 60 seconds."
     - docker-compose run --entrypoint "npm run test" frontend
     - echo "Code coverage is 90%"
+
+deploy-job:
+  stage: deploy  
+  before_script:
+  - docker build -t lhtaira/workshopcientrega02:frontend -f ./frontend/Dockerfile ./frontend/ 
+  - echo "$PASSWORD" | docker login -u "$USER" "docker.io" --password-stdin
+  script:
+    - echo "Deploying application..."
+    - docker build -t lhtaira/workshopcientrega02:backend -f ./backend/Dockerfile ./backend/ 
+    - docker push lhtaira/workshopcientrega02:frontend
+    - docker push lhtaira/workshopcientrega02:backend
+    - echo "Application successfully deployed."
