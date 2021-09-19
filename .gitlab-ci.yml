@@ -47,3 +47,4 @@ deploy-job:
     - docker push lhtaira/workshopcientrega02:frontend
     - docker push lhtaira/workshopcientrega02:backend
     - echo "Application successfully deployed."
+-
